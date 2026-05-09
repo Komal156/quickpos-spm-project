@@ -1,27 +1,12 @@
 name: QuickPOS CI Pipeline
 
-on:
-  pull_request:
-    branches: [ main ]
-  push:
-    branches: [ feature/* ]
+on: [push, pull_request]
 
 jobs:
-  # This job satisfies Stage 10 & 11 of your requirements
   build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Validate Jira ID
-        run: |
-          commit_msg=$(git log -1 --pretty=%B)
-          if [[ ! $commit_msg =~ "QP-" ]]; then
-            echo "Jira ID missing in commit message"
-            exit 1
-          fi
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -34,6 +19,12 @@ jobs:
       - name: Syntax Check
         run: php -l index.php
 
-      - name: Run Automated Tests
-        # Using the direct path to ensure the pipeline finds your tests
-        run: ./vendor/bin/phpunit tests/FormTest.php
+      - name: Run Tests
+        # We use 'vendor/bin/phpunit' directly to avoid path errors
+        run: vendor/bin/phpunit tests/FormTest.php
+
+      - name: Jira ID Check
+        # This will always pass as long as "QP-" is in your last commit message
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          if [[ "$MSG" == *"QP-"* ]]; then echo "ID Found"; else echo "Missing QP ID"; exit 1; fi
