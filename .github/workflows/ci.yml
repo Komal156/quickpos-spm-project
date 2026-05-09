@@ -5,12 +5,12 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Validate Jira ID in Branch or Commit
         run: |
           # Check if QP- is in the branch name OR the commit message
-          STR="${{ github.head_ref }}${{ github.workflow }}$(git log -1 --pretty=%B)"
+          STR="${{ github.head_ref }}${{ github.ref_name }}$(git log -1 --pretty=%B)"
           if [[ "$STR" == *"QP-"* ]]; then 
             echo "SUCCESS: Jira ID Found"; 
           else 

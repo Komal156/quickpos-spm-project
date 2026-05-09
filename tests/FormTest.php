@@ -1,6 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once 'process.php';
+require_once __DIR__ . '/../process.php';
 
 class FormTest extends TestCase {
     private $validator;
