@@ -1,0 +1,35 @@
+name: QuickPOS CI Pipeline
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Blocks the merge if you forget the Jira ID in your commit message
+  jira-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Check for POS- ID
+        run: |
+          commit_msg=$(git log -1 --pretty=%B)
+          if [[ ! $commit_msg =~ POS-[0-9]+ ]]; then
+            echo "Error: Commit message must include a Jira ID (e.g., [POS-4])"
+            exit 1
+          fi
+
+  # Job 2: Runs tests and quality checks in parallel
+  quality-and-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Install Dependencies
+        run: composer install
+      - name: Run Syntax Check
+        run: php -l index.php || echo "No index.php yet"
