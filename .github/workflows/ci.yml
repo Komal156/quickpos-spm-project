@@ -7,42 +7,32 @@ on:
     branches: [ feature/* ]
 
 jobs:
-  # Stage 10 & 11: Jira Commit Validation & Parallel Design
   jira-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Validate Jira ID in Commit
+      - name: Validate Jira ID
         run: |
           commit_msg=$(git log -1 --pretty=%B)
-          echo "Recent commit message: $commit_msg"
-          # This checks if 'QP-' exists anywhere in the message
           if [[ ! $commit_msg =~ "QP-" ]]; then
-            echo "FAILED: Your commit message must include a Jira ID like [QP-50]"
+            echo "Jira ID missing"
             exit 1
           fi
-          echo "SUCCESS: Jira ID found."
 
-  # Stage 4, 5, & 11: Quality, Syntax and Tests in Parallel
   quality-and-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, xml, ctype, iconv, mysql
-          
-      - name: Install Composer Dependencies
+      - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist
-
-      - name: Run PHP Syntax Check (Stage 5)
+      - name: Run Syntax Check
         run: php -l index.php
-
-      - name: Run Automated Tests (Stage 4 & 7)
-        # We target the specific file to ensure it passes
+      - name: Run Tests
+        # This will run your FormTest.php specifically
         run: ./vendor/bin/phpunit tests/FormTest.php
