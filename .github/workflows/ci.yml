@@ -34,5 +34,4 @@ jobs:
       - name: Run Syntax Check
         run: php -l index.php
       - name: Run Tests
-        # This will run your FormTest.php specifically
         run: ./vendor/bin/phpunit tests/FormTest.php
