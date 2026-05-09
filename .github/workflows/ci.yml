@@ -7,20 +7,22 @@ on:
     branches: [ feature/* ]
 
 jobs:
+  # Job 1: Validates the Jira ID
   jira-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Validate Jira ID
+      - name: Check for QP- ID
         run: |
           commit_msg=$(git log -1 --pretty=%B)
           if [[ ! $commit_msg =~ "QP-" ]]; then
-            echo "Jira ID missing"
+            echo "Error: Commit message must include a Jira ID like [QP-50]"
             exit 1
           fi
 
+  # Job 2: Runs everything else
   quality-and-tests:
     runs-on: ubuntu-latest
     steps:
@@ -33,5 +35,6 @@ jobs:
         run: composer install --no-interaction --prefer-dist
       - name: Run Syntax Check
         run: php -l index.php
-      - name: Run Tests
-        run: ./vendor/bin/phpunit tests/FormTest.php
+      - name: Run Automated Tests
+        # This tells GitHub to find PHPUnit inside the vendor folder we just installed
+        run: vendor/bin/phpunit tests/FormTest.php
