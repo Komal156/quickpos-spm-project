@@ -44,12 +44,12 @@ The `Code Quality` and `Test & Syntax` jobs run **in parallel** after `Validate`
 
 | Test | Jira Ticket | Description |
 |---|---|---|
-| `testEmptyNameFails` | QP-201 | Empty name triggers validation error |
-| `testInvalidEmailFails` | QP-202 | Malformed email triggers validation error |
-| `testEmptyMessageFails` | QP-203 | Empty message triggers validation error |
-| `testValidDataPasses` | QP-204 | Valid inputs produce zero errors |
-| `testPageLoads` | QP-205 | index.php loads without errors and contains expected content |
-| `testInvalidEmailFormats` | QP-206 | Data-driven: 4 invalid email formats all fail validation |
+| `testEmptyNameFails` | QP-55 | Empty name triggers validation error |
+| `testInvalidEmailFails` | QP-56 | Malformed email triggers validation error |
+| `testEmptyMessageFails` | QP-55 | Empty message triggers validation error |
+| `testValidDataPasses` | QP-57 | Valid inputs produce zero errors |
+| `testPageLoads` | QP-58 | index.php loads without fatal errors and returns expected HTML |
+| `testInvalidEmailFormats` | QP-56 | Data-driven: 4 invalid email formats all fail validation |
 
 ## Branching Strategy
 
