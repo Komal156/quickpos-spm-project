@@ -7,34 +7,33 @@ on:
     branches: [ feature/* ]
 
 jobs:
-  # Job 1: Validates the Jira ID
-  jira-check:
+  # This job satisfies Stage 10 & 11 of your requirements
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Check for QP- ID
+
+      - name: Validate Jira ID
         run: |
           commit_msg=$(git log -1 --pretty=%B)
           if [[ ! $commit_msg =~ "QP-" ]]; then
-            echo "Error: Commit message must include a Jira ID like [QP-50]"
+            echo "Jira ID missing in commit message"
             exit 1
           fi
 
-  # Job 2: Runs everything else
-  quality-and-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist
-      - name: Run Syntax Check
+
+      - name: Syntax Check
         run: php -l index.php
+
       - name: Run Automated Tests
-        # This tells GitHub to find PHPUnit inside the vendor folder we just installed
-        run: vendor/bin/phpunit tests/FormTest.php
+        # Using the direct path to ensure the pipeline finds your tests
+        run: ./vendor/bin/phpunit tests/FormTest.php
