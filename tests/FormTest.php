@@ -24,3 +24,4 @@ class FormTest extends TestCase {
         $this->assertEmpty($result);
     }
 }
+
