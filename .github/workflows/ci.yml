@@ -1,5 +1,4 @@
 name: QuickPOS CI Pipeline
-
 on: [push, pull_request]
 
 jobs:
@@ -7,6 +6,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Validate Jira ID in Branch or Commit
+        run: |
+          # Check if QP- is in the branch name OR the commit message
+          STR="${{ github.head_ref }}${{ github.workflow }}$(git log -1 --pretty=%B)"
+          if [[ "$STR" == *"QP-"* ]]; then 
+            echo "SUCCESS: Jira ID Found"; 
+          else 
+            echo "ERROR: No Jira ID found in branch name or commit"; 
+            exit 1; 
+          fi
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -16,15 +26,8 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Syntax Check
+      - name: Run Syntax Check
         run: php -l index.php
 
-      - name: Run Tests
-        # We use 'vendor/bin/phpunit' directly to avoid path errors
+      - name: Run Automated Tests
         run: vendor/bin/phpunit tests/FormTest.php
-
-      - name: Jira ID Check
-        # This will always pass as long as "QP-" is in your last commit message
-        run: |
-          MSG=$(git log -1 --pretty=%B)
-          if [[ "$MSG" == *"QP-"* ]]; then echo "ID Found"; else echo "Missing QP ID"; exit 1; fi
