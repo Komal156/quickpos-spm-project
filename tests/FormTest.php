@@ -26,7 +26,7 @@ class FormTest extends TestCase
     public function testEmptyNameFails(): void
     {
         $result = $this->validator->validate('', 'test@email.com', 'Hello');
-        $this->assertContains('WRONG MESSAGE.', $result);
+        $this->assertContains('Name Required', $result);
     }
 
     /**
